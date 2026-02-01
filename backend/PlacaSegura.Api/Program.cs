@@ -10,6 +10,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -45,8 +55,17 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
+app.UseCors("AllowFrontend");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Seed Database (InMemory)
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<PlacaSegura.Infrastructure.Persistence.PlacaSeguraDbContext>();
+    dbContext.Database.EnsureCreated();
+}
 
 app.MapControllers();
 

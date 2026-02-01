@@ -17,3 +17,4 @@ C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Infras
 C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Infrastructure\obj\Debug\net10.0\PlacaSegura.Infrastructure.pdb
 C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Infrastructure\obj\Debug\net10.0\PlacaSegura.Infrastructure.genruntimeconfig.cache
 C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Infrastructure\obj\Debug\net10.0\ref\PlacaSegura.Infrastructure.dll
+C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Infrastructure\obj\Debug\net10.0\PlacaSegura.Infrastructure.sourcelink.json

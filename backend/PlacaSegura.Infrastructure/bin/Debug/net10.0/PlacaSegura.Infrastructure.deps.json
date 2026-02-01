@@ -8,6 +8,7 @@
     ".NETCoreApp,Version=v10.0": {
       "PlacaSegura.Infrastructure/1.0.0": {
         "dependencies": {
+          "Microsoft.EntityFrameworkCore.InMemory": "10.0.2",
           "Microsoft.EntityFrameworkCore.Tools": "10.0.2",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.0",
           "PlacaSegura.Application": "1.0.0",
@@ -377,6 +378,19 @@
         },
         "runtime": {
           "lib/net10.0/Microsoft.EntityFrameworkCore.Design.dll": {
+            "assemblyVersion": "10.0.2.0",
+            "fileVersion": "10.0.225.61305"
+          }
+        }
+      },
+      "Microsoft.EntityFrameworkCore.InMemory/10.0.2": {
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "10.0.2",
+          "Microsoft.Extensions.Caching.Memory": "10.0.2",
+          "Microsoft.Extensions.Logging": "10.0.2"
+        },
+        "runtime": {
+          "lib/net10.0/Microsoft.EntityFrameworkCore.InMemory.dll": {
             "assemblyVersion": "10.0.2.0",
             "fileVersion": "10.0.225.61305"
           }
@@ -804,6 +818,13 @@
       "sha512": "sha512-tBwpyZ75SqcRjmZyhLYJVGKyfz1Z1dmsYtvJGZ2QLSI1tOHgMuLPTovunHA1JF9a0EWJs+WB6tVWmqo3DTL/MQ==",
       "path": "microsoft.entityframeworkcore.design/10.0.2",
       "hashPath": "microsoft.entityframeworkcore.design.10.0.2.nupkg.sha512"
+    },
+    "Microsoft.EntityFrameworkCore.InMemory/10.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-tW3LlDffLljRCGG6w7D1Uz8eI7r+uZ/prpCKutlp+ZILTjxHmkYGYQg+veBbjZ1nZe5vpIr3Z51qMF6rlmdX5A==",
+      "path": "microsoft.entityframeworkcore.inmemory/10.0.2",
+      "hashPath": "microsoft.entityframeworkcore.inmemory.10.0.2.nupkg.sha512"
     },
     "Microsoft.EntityFrameworkCore.Relational/10.0.2": {
       "type": "package",

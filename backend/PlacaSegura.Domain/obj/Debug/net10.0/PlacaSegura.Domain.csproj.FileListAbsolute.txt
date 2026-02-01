@@ -9,3 +9,4 @@ C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Domain
 C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Domain\obj\Debug\net10.0\refint\PlacaSegura.Domain.dll
 C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Domain\obj\Debug\net10.0\PlacaSegura.Domain.pdb
 C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Domain\obj\Debug\net10.0\ref\PlacaSegura.Domain.dll
+C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Domain\obj\Debug\net10.0\PlacaSegura.Domain.sourcelink.json

@@ -13,3 +13,4 @@ C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Applic
 C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Application\obj\Debug\net10.0\refint\PlacaSegura.Application.dll
 C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Application\obj\Debug\net10.0\PlacaSegura.Application.pdb
 C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Application\obj\Debug\net10.0\ref\PlacaSegura.Application.dll
+C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Application\obj\Debug\net10.0\PlacaSegura.Application.sourcelink.json
