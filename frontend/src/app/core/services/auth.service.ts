@@ -24,9 +24,23 @@ export class AuthService {
   verifyOtp(email: string, code: string) {
     return this.http.post<any>(`${this.apiUrl}/otp/verify`, { email, code }).pipe(
       tap(response => {
-        localStorage.setItem(this.tokenKey, response.accessToken);
-        localStorage.setItem(this.userKey, JSON.stringify(response));
-        this.currentUser$.next(response);
+        this.saveAuth(response);
+      })
+    );
+  }
+
+  register(email: string, fullName: string) {
+    return this.http.post<any>(`${this.apiUrl}/register`, { email, fullName }).pipe(
+      tap(response => {
+        this.saveAuth(response);
+      })
+    );
+  }
+
+  socialLogin(provider: string, token: string) {
+    return this.http.post<any>(`${this.apiUrl}/social`, { provider, token }).pipe(
+      tap(response => {
+        this.saveAuth(response);
       })
     );
   }
@@ -39,6 +53,12 @@ export class AuthService {
 
   getToken() {
     return localStorage.getItem(this.tokenKey);
+  }
+
+  private saveAuth(response: any) {
+    localStorage.setItem(this.tokenKey, response.accessToken);
+    localStorage.setItem(this.userKey, JSON.stringify(response));
+    this.currentUser$.next(response);
   }
 
   private loadUser() {

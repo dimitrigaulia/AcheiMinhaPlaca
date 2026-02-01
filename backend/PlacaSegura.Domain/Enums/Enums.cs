@@ -39,3 +39,10 @@ public enum ReportFlagStatus
     Open = 0,
     Reviewed = 1
 }
+
+public enum SubscriptionType
+{
+    Free = 0,
+    Premium = 1,
+    Business = 2
+}

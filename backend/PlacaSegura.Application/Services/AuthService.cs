@@ -93,9 +93,134 @@ public class AuthService : IAuthService
         var accessToken = _jwtTokenGenerator.GenerateAccessToken(user);
         var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
 
-        // TODO: Store refresh token if needed, but for now just return it.
+        return new AuthResponseDto(
+            accessToken, 
+            refreshToken, 
+            user.Id, 
+            user.Email, 
+            user.Role.ToString(),
+            user.FullName,
+            user.SubscriptionType.ToString());
+    }
 
-        return new AuthResponseDto(accessToken, refreshToken, user.Id, user.Email, user.Role.ToString());
+    public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
+    {
+        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+        if (existingUser != null)
+        {
+            throw new Exception("User already exists.");
+        }
+
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            Email = dto.Email,
+            FullName = dto.FullName,
+            Role = UserRole.User,
+            SubscriptionType = SubscriptionType.Free,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        var accessToken = _jwtTokenGenerator.GenerateAccessToken(user);
+        var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
+
+        return new AuthResponseDto(
+            accessToken,
+            refreshToken,
+            user.Id,
+            user.Email,
+            user.Role.ToString(),
+            user.FullName,
+            user.SubscriptionType.ToString());
+    }
+
+    public async Task<AuthResponseDto> SocialLoginAsync(SocialLoginDto dto)
+    {
+        // Mocking Google Token Validation
+        // In a real app, you'd use Google.Apis.Auth.GoogleJsonWebSignature.ValidateAsync(dto.Token)
+        
+        string email = "";
+        string name = "";
+        string externalId = "";
+
+        if (dto.Provider.ToLower() == "google")
+        {
+            // Simulate extracted info from token
+            email = "google_user@example.com"; 
+            name = "Google User";
+            externalId = "google_id_123";
+        }
+        else
+        {
+            throw new Exception("Provider not supported.");
+        }
+
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        if (user == null)
+        {
+            user = new User
+            {
+                Id = Guid.NewGuid(),
+                Email = email,
+                FullName = name,
+                ExternalProvider = dto.Provider,
+                ExternalId = externalId,
+                Role = UserRole.User,
+                SubscriptionType = SubscriptionType.Free,
+                CreatedAt = DateTime.UtcNow
+            };
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+        }
+
+        var accessToken = _jwtTokenGenerator.GenerateAccessToken(user);
+        var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
+
+        return new AuthResponseDto(
+            accessToken,
+            refreshToken,
+            user.Id,
+            user.Email,
+            user.Role.ToString(),
+            user.FullName,
+            user.SubscriptionType.ToString());
+    }
+
+    public async Task<AuthResponseDto> AdminRegisterAsync(RegisterDto dto)
+    {
+        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+        if (existingUser != null)
+        {
+            throw new Exception("User already exists.");
+        }
+
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            Email = dto.Email,
+            FullName = dto.FullName,
+            Role = UserRole.Admin, // Set as Admin
+            SubscriptionType = SubscriptionType.Business,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        var accessToken = _jwtTokenGenerator.GenerateAccessToken(user);
+        var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
+
+        return new AuthResponseDto(
+            accessToken,
+            refreshToken,
+            user.Id,
+            user.Email,
+            user.Role.ToString(),
+            user.FullName,
+            user.SubscriptionType.ToString());
     }
 
     public Task<AuthResponseDto> RefreshTokenAsync(string refreshToken)

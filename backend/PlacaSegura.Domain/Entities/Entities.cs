@@ -8,7 +8,12 @@ public class User
 {
     public Guid Id { get; set; }
     public string Email { get; set; } = string.Empty;
+    public string? FullName { get; set; }
     public UserRole Role { get; set; }
+    public string? ExternalProvider { get; set; }
+    public string? ExternalId { get; set; }
+    public SubscriptionType SubscriptionType { get; set; } = SubscriptionType.Free;
+    public DateTime? SubscriptionExpiresAt { get; set; }
     public DateTime CreatedAt { get; set; }
 }
 

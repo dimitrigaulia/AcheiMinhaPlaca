@@ -28,4 +28,26 @@ public class AuthController : ControllerBase
         var response = await _authService.VerifyOtpAsync(dto.Email, dto.Code);
         return Ok(response);
     }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+    {
+        var response = await _authService.RegisterAsync(dto);
+        return Ok(response);
+    }
+
+    [HttpPost("social")]
+    public async Task<IActionResult> SocialLogin([FromBody] SocialLoginDto dto)
+    {
+        var response = await _authService.SocialLoginAsync(dto);
+        return Ok(response);
+    }
+
+    [HttpPost("admin/register")]
+    public async Task<IActionResult> AdminRegister([FromBody] RegisterDto dto)
+    {
+        // In a real app, this should be protected by an API Key or existing Admin role
+        var response = await _authService.AdminRegisterAsync(dto);
+        return Ok(response);
+    }
 }

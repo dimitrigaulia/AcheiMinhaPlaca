@@ -10,6 +10,9 @@ public interface IAuthService
     Task RequestOtpAsync(string email);
     Task<AuthResponseDto> VerifyOtpAsync(string email, string code);
     Task<AuthResponseDto> RefreshTokenAsync(string refreshToken);
+    Task<AuthResponseDto> RegisterAsync(RegisterDto dto);
+    Task<AuthResponseDto> SocialLoginAsync(SocialLoginDto dto);
+    Task<AuthResponseDto> AdminRegisterAsync(RegisterDto dto);
 }
 
 public interface IJwtTokenGenerator

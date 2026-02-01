@@ -29,6 +29,8 @@ public class PlacaSeguraDbContext : DbContext, IPlacaSeguraDbContext
         {
             e.HasKey(x => x.Id);
             e.HasIndex(x => x.Email).IsUnique();
+            e.Property(x => x.Role).HasConversion<int>();
+            e.Property(x => x.SubscriptionType).HasConversion<int>();
         });
 
         // Report

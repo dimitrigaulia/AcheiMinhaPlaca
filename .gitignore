@@ -1,14 +1,37 @@
-# Backend
-**/bin/
-**/obj/
-.vs/
+# .gitignore for AcheiMinhaPlaca
+
+# .NET / C#
+[Bb]in/
+[Oo]bj/
+*.dll
+*.exe
+*.pdb
 *.user
 *.suo
+*.sln.docstates
+.vs/
+.idea/
+*.userosscache
+*.suo
+*.userprefs
 appsettings.Development.json
 appsettings.Local.json
 
-# Frontend
+# Angular / Frontend
 node_modules/
 .angular/
 dist/
 .env
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.editorconfig
+.vscode/
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# OS files
+.DS_Store
+Thumbs.db

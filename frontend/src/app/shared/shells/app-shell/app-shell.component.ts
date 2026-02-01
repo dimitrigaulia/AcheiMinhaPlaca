@@ -36,6 +36,7 @@ import { AuthService } from '../../../core/services/auth.service';
           <a mat-list-item routerLink="/app/dashboard" routerLinkActive="active" (click)="closeOnMobile()">Dashboard</a>
           <a mat-list-item routerLink="/app/reports" routerLinkActive="active" (click)="closeOnMobile()">Meus Anúncios</a>
           <a mat-list-item routerLink="/app/search" routerLinkActive="active" (click)="closeOnMobile()">Buscar</a>
+          <a mat-list-item *ngIf="(user$ | async)?.role === 'Admin'" routerLink="/app/admin" routerLinkActive="active" (click)="closeOnMobile()">Backoffice</a>
         </mat-nav-list>
       </mat-sidenav>
       <mat-sidenav-content>
@@ -71,6 +72,7 @@ export class AppShellComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  user$ = this.authService.currentUser$;
   @ViewChild('drawer') drawer!: MatSidenav;
 
   isHandset$ = this.breakpointObserver.observe(Breakpoints.Handset)

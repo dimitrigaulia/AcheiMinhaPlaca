@@ -9,6 +9,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -17,19 +20,22 @@ import { AuthService } from '../../../core/services/auth.service';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    RouterLink,
     MatCardModule,
     MatButtonModule,
     MatInputModule,
     MatFormFieldModule,
     MatStepperModule,
     MatProgressBarModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatDividerModule,
+    MatIconModule
   ],
   template: `
     <div class="login-container">
       <mat-card class="login-card">
         <mat-card-header>
-          <mat-card-title>Entrar / Cadastrar</mat-card-title>
+          <mat-card-title>Entrar</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <mat-stepper linear #stepper>
@@ -50,6 +56,19 @@ import { AuthService } from '../../../core/services/auth.service';
                   </button>
                 </div>
               </form>
+
+              <div class="divider-container">
+                <mat-divider></mat-divider>
+                <span class="divider-text">OU</span>
+              </div>
+
+              <button mat-stroked-button class="full-width google-btn" (click)="loginWithGoogle()" [disabled]="loading">
+                Entrar com Google
+              </button>
+
+              <p class="footer-text">
+                Não tem uma conta? <a routerLink="/register">Cadastrar-se</a>
+              </p>
             </mat-step>
 
             <!-- Step 2: Code -->
@@ -81,6 +100,10 @@ import { AuthService } from '../../../core/services/auth.service';
     .login-card { max-width: 400px; width: 100%; }
     .full-width { width: 100%; }
     .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+    .divider-container { position: relative; margin: 24px 0; text-align: center; }
+    .divider-text { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: white; padding: 0 10px; color: #888; font-size: 0.8rem; }
+    .google-btn { margin-bottom: 16px; }
+    .footer-text { text-align: center; margin-top: 16px; font-size: 0.9rem; }
   `]
 })
 export class LoginComponent {
@@ -139,4 +162,23 @@ export class LoginComponent {
       }
     });
   }
+
+  loginWithGoogle() {
+    this.loading = true;
+    // Mocking Google Login for MVP
+    setTimeout(() => {
+      this.authService.socialLogin('google', 'mock_token').subscribe({
+        next: () => {
+          this.loading = false;
+          this.snackBar.open('Login realizado com Google!', 'OK', { duration: 3000 });
+          this.router.navigate(['/app/dashboard']);
+        },
+        error: () => {
+          this.loading = false;
+          this.snackBar.open('Erro no login social.', 'Fechar', { duration: 3000 });
+        }
+      });
+    }, 1000);
+  }
 }
+
