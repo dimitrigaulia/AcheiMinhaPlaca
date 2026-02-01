@@ -1,0 +1,11 @@
+C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Domain\bin\Debug\net10.0\PlacaSegura.Domain.deps.json
+C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Domain\bin\Debug\net10.0\PlacaSegura.Domain.dll
+C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Domain\bin\Debug\net10.0\PlacaSegura.Domain.pdb
+C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Domain\obj\Debug\net10.0\PlacaSegura.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Domain\obj\Debug\net10.0\PlacaSegura.Domain.AssemblyInfoInputs.cache
+C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Domain\obj\Debug\net10.0\PlacaSegura.Domain.AssemblyInfo.cs
+C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Domain\obj\Debug\net10.0\PlacaSegura.Domain.csproj.CoreCompileInputs.cache
+C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Domain\obj\Debug\net10.0\PlacaSegura.Domain.dll
+C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Domain\obj\Debug\net10.0\refint\PlacaSegura.Domain.dll
+C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Domain\obj\Debug\net10.0\PlacaSegura.Domain.pdb
+C:\Users\User\Documents\trae_projects\AcheiMinhaPlaca\backend\PlacaSegura.Domain\obj\Debug\net10.0\ref\PlacaSegura.Domain.dll

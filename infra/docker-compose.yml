@@ -1,0 +1,26 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: placa_postgres
+    environment:
+      POSTGRES_USER: placa
+      POSTGRES_PASSWORD: placa
+      POSTGRES_DB: placa_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - placa_pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: placa_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@local.dev
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+
+volumes:
+  placa_pgdata:
