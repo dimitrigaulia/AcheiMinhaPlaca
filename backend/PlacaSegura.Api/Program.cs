@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PlacaSegura.Application;
 using PlacaSegura.Infrastructure;
+using PlacaSegura.Domain.Entities;
+using PlacaSegura.Domain.Enums;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -66,6 +68,38 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<PlacaSegura.Infrastructure.Persistence.PlacaSeguraDbContext>();
     dbContext.Database.Migrate();
+
+    // Seed Master Admin
+    var adminEmail = "dimitrifgaulia@gmail.com";
+    if (!dbContext.Users.Any(u => u.Email == adminEmail))
+    {
+        var admin = new User
+        {
+            Id = Guid.NewGuid(),
+            Email = adminEmail,
+            FullName = "Master Admin",
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123456"),
+            Cpf = "96605574066",
+            PhoneNumber = "(11) 99999-9999",
+            BirthDate = new DateTime(1990, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            Address = new Address
+            {
+                ZipCode = "01001-000",
+                Street = "Praça da Sé",
+                Number = "1",
+                Neighborhood = "Sé",
+                City = "São Paulo",
+                State = "SP"
+            },
+            TermsAccepted = true,
+            TermsAcceptedAt = DateTime.UtcNow,
+            Role = UserRole.Admin,
+            SubscriptionType = SubscriptionType.Business,
+            CreatedAt = DateTime.UtcNow
+        };
+        dbContext.Users.Add(admin);
+        dbContext.SaveChanges();
+    }
 }
 
 app.MapControllers();

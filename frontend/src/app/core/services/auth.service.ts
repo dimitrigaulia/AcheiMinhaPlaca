@@ -29,8 +29,8 @@ export class AuthService {
     );
   }
 
-  register(email: string, fullName: string) {
-    return this.http.post<any>(`${this.apiUrl}/register`, { email, fullName }).pipe(
+  register(data: any) {
+    return this.http.post<any>(`${this.apiUrl}/register`, data).pipe(
       tap(response => {
         this.saveAuth(response);
       })

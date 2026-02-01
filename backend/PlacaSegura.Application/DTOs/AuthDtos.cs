@@ -18,6 +18,21 @@ public record AuthResponseDto(
     string? SubscriptionType = "Free"
 );
 
-public record RegisterDto(string Email, string FullName);
+public record RegisterDto(
+    string Email, 
+    string FullName,
+    string Password,
+    string Cpf,
+    string PhoneNumber,
+    DateTime BirthDate,
+    string ZipCode,
+    string Street,
+    string Number,
+    string? Complement,
+    string Neighborhood,
+    string City,
+    string State,
+    bool TermsAccepted
+);
 
 public record SocialLoginDto(string Provider, string Token);

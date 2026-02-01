@@ -8,13 +8,34 @@ public class User
 {
     public Guid Id { get; set; }
     public string Email { get; set; } = string.Empty;
+    public string? PasswordHash { get; set; }
     public string? FullName { get; set; }
+    public string? Cpf { get; set; }
+    public string? PhoneNumber { get; set; }
+    public DateTime? BirthDate { get; set; }
+    
+    public Address? Address { get; set; }
+    
+    public bool TermsAccepted { get; set; }
+    public DateTime? TermsAcceptedAt { get; set; }
+
     public UserRole Role { get; set; }
     public string? ExternalProvider { get; set; }
     public string? ExternalId { get; set; }
     public SubscriptionType SubscriptionType { get; set; } = SubscriptionType.Free;
     public DateTime? SubscriptionExpiresAt { get; set; }
     public DateTime CreatedAt { get; set; }
+}
+
+public class Address
+{
+    public string ZipCode { get; set; } = string.Empty;
+    public string Street { get; set; } = string.Empty;
+    public string Number { get; set; } = string.Empty;
+    public string? Complement { get; set; }
+    public string Neighborhood { get; set; } = string.Empty;
+    public string City { get; set; } = string.Empty;
+    public string State { get; set; } = string.Empty;
 }
 
 public class OtpRequest

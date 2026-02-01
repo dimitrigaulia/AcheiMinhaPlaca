@@ -105,10 +105,20 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
     {
-        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+        if (!dto.TermsAccepted)
+        {
+             throw new Exception("Terms of use must be accepted.");
+        }
+
+        if (!ValidateCpf(dto.Cpf))
+        {
+            throw new Exception("Invalid CPF.");
+        }
+
+        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email || u.Cpf == dto.Cpf);
         if (existingUser != null)
         {
-            throw new Exception("User already exists.");
+            throw new Exception("User with this email or CPF already exists.");
         }
 
         var user = new User
@@ -116,6 +126,22 @@ public class AuthService : IAuthService
             Id = Guid.NewGuid(),
             Email = dto.Email,
             FullName = dto.FullName,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+            Cpf = dto.Cpf,
+            PhoneNumber = dto.PhoneNumber,
+            BirthDate = dto.BirthDate,
+            Address = new Address
+            {
+                ZipCode = dto.ZipCode,
+                Street = dto.Street,
+                Number = dto.Number,
+                Complement = dto.Complement,
+                Neighborhood = dto.Neighborhood,
+                City = dto.City,
+                State = dto.State
+            },
+            TermsAccepted = dto.TermsAccepted,
+            TermsAcceptedAt = DateTime.UtcNow,
             Role = UserRole.User,
             SubscriptionType = SubscriptionType.Free,
             CreatedAt = DateTime.UtcNow
@@ -135,6 +161,39 @@ public class AuthService : IAuthService
             user.Role.ToString(),
             user.FullName,
             user.SubscriptionType.ToString());
+    }
+
+    private bool ValidateCpf(string cpf)
+    {
+        if (string.IsNullOrEmpty(cpf)) return false;
+        var cleanCpf = new string(cpf.Where(char.IsDigit).ToArray());
+
+        if (cleanCpf.Length != 11)
+            return false;
+
+        if (cleanCpf.Distinct().Count() == 1)
+            return false;
+
+        int[] multiplier1 = { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+        int sum = 0;
+        for (int i = 0; i < 9; i++)
+            sum += int.Parse(cleanCpf[i].ToString()) * multiplier1[i];
+        
+        int remainder = sum % 11;
+        int digit1 = remainder < 2 ? 0 : 11 - remainder;
+
+        if (int.Parse(cleanCpf[9].ToString()) != digit1)
+            return false;
+
+        int[] multiplier2 = { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+        sum = 0;
+        for (int i = 0; i < 10; i++)
+            sum += int.Parse(cleanCpf[i].ToString()) * multiplier2[i];
+        
+        remainder = sum % 11;
+        int digit2 = remainder < 2 ? 0 : 11 - remainder;
+
+        return int.Parse(cleanCpf[10].ToString()) == digit2;
     }
 
     public async Task<AuthResponseDto> SocialLoginAsync(SocialLoginDto dto)
@@ -202,6 +261,22 @@ public class AuthService : IAuthService
             Id = Guid.NewGuid(),
             Email = dto.Email,
             FullName = dto.FullName,
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+            Cpf = dto.Cpf,
+            PhoneNumber = dto.PhoneNumber,
+            BirthDate = dto.BirthDate,
+            Address = new Address
+            {
+                ZipCode = dto.ZipCode,
+                Street = dto.Street,
+                Number = dto.Number,
+                Complement = dto.Complement,
+                Neighborhood = dto.Neighborhood,
+                City = dto.City,
+                State = dto.State
+            },
+            TermsAccepted = dto.TermsAccepted,
+            TermsAcceptedAt = DateTime.UtcNow,
             Role = UserRole.Admin, // Set as Admin
             SubscriptionType = SubscriptionType.Business,
             CreatedAt = DateTime.UtcNow

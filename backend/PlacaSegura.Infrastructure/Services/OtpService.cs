@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PlacaSegura.Application.Common.Interfaces;
+using Polly;
 
 namespace PlacaSegura.Infrastructure.Services;
 
@@ -29,13 +30,32 @@ public class OtpService : IOtpService
         return code;
     }
 
-    public Task SendOtpAsync(string email, string code)
+    public async Task SendOtpAsync(string email, string code)
     {
-        // MVP: Log to console
-        _logger.LogInformation("==========================================");
-        _logger.LogInformation($"[OTP SENDER] Email: {email} | Code: {code}");
-        _logger.LogInformation("==========================================");
-        
-        return Task.CompletedTask;
+        var retryPolicy = Policy
+            .Handle<Exception>()
+            .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                (exception, timeSpan, retryCount, context) =>
+                {
+                    _logger.LogWarning($"Falha ao enviar OTP (Tentativa {retryCount}). Erro: {exception.Message}. Retentando em {timeSpan.TotalSeconds}s...");
+                });
+
+        await retryPolicy.ExecuteAsync(async () =>
+        {
+             try 
+             {
+                // MVP: Log to console
+                _logger.LogInformation("==========================================");
+                _logger.LogInformation($"[OTP SENDER] Email: {email} | Code: {code}");
+                _logger.LogInformation("==========================================");
+                
+                await Task.CompletedTask;
+             }
+             catch (Exception ex)
+             {
+                 _logger.LogError(ex, "Erro crítico ao enviar OTP.");
+                 throw;
+             }
+        });
     }
 }

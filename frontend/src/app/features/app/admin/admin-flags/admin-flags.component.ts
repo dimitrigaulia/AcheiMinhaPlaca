@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-admin-flags',
@@ -18,36 +18,36 @@ import { environment } from '../../../../environments/environment';
       <mat-card>
         <table mat-table [dataSource]="flags" class="full-width">
           <ng-container matColumnDef="id">
-            <th mat-header-cell *thDef="let element">ID</th>
-            <td mat-cell *tdDef="let element">{{ element.id | slice:0:8 }}...</td>
+            <th mat-header-cell *matHeaderCellDef="let element">ID</th>
+            <td mat-cell *matCellDef="let element">{{ element.id | slice:0:8 }}...</td>
           </ng-container>
 
           <ng-container matColumnDef="reportId">
-            <th mat-header-cell *thDef="let element">Anúncio</th>
-            <td mat-cell *tdDef="let element">{{ element.reportId | slice:0:8 }}...</td>
+            <th mat-header-cell *matHeaderCellDef="let element">Anúncio</th>
+            <td mat-cell *matCellDef="let element">{{ element.reportId | slice:0:8 }}...</td>
           </ng-container>
 
           <ng-container matColumnDef="reason">
-            <th mat-header-cell *thDef="let element">Motivo</th>
-            <td mat-cell *tdDef="let element">{{ element.reason }}</td>
+            <th mat-header-cell *matHeaderCellDef="let element">Motivo</th>
+            <td mat-cell *matCellDef="let element">{{ element.reason }}</td>
           </ng-container>
 
           <ng-container matColumnDef="status">
-            <th mat-header-cell *thDef="let element">Status</th>
-            <td mat-cell *tdDef="let element">{{ element.status }}</td>
+            <th mat-header-cell *matHeaderCellDef="let element">Status</th>
+            <td mat-cell *matCellDef="let element">{{ element.status }}</td>
           </ng-container>
 
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *thDef="let element">Ações</th>
-            <td mat-cell *tdDef="let element">
+            <th mat-header-cell *matHeaderCellDef="let element">Ações</th>
+            <td mat-cell *matCellDef="let element">
               <button mat-icon-button color="warn" (click)="removeReport(element.reportId)">
                 <mat-icon>delete</mat-icon>
               </button>
             </td>
           </ng-container>
 
-          <tr mat-header-row *headerRowDef="displayedColumns"></tr>
-          <tr mat-row *rowDef="let row; columns: displayedColumns;"></tr>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
         
         <div *ngIf="flags.length === 0" class="empty-state">
