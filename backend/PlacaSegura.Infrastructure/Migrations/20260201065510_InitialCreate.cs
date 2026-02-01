@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace PlacaSegura.Infrastructure.Migrations
 {
     /// <inheritdoc />
@@ -49,8 +51,31 @@ namespace PlacaSegura.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true),
+                    FullName = table.Column<string>(type: "text", nullable: true),
+                    Cpf = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    BirthDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Address_ZipCode = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    Address_Street = table.Column<string>(type: "text", nullable: true),
+                    Address_Number = table.Column<string>(type: "text", nullable: true),
+                    Address_Complement = table.Column<string>(type: "text", nullable: true),
+                    Address_Neighborhood = table.Column<string>(type: "text", nullable: true),
+                    Address_City = table.Column<string>(type: "text", nullable: true),
+                    Address_State = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: true),
+                    TermsAccepted = table.Column<bool>(type: "boolean", nullable: false),
+                    TermsAcceptedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Role = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    ExternalProvider = table.Column<string>(type: "text", nullable: true),
+                    ExternalId = table.Column<string>(type: "text", nullable: true),
+                    SubscriptionType = table.Column<int>(type: "integer", nullable: false),
+                    SubscriptionExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    IsEmailVerified = table.Column<bool>(type: "boolean", nullable: false),
+                    FailedLoginCount = table.Column<int>(type: "integer", nullable: false),
+                    LockoutUntilUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LastLoginAtUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -232,6 +257,18 @@ namespace PlacaSegura.Infrastructure.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.InsertData(
+                table: "SafeLocations",
+                columns: new[] { "Id", "Address", "City", "IsActive", "Name", "Neighborhood" },
+                values: new object[,]
+                {
+                    { new Guid("11111111-1111-1111-1111-111111111111"), "Rua Principal, 100", "São Paulo", true, "Delegacia Central", "Centro" },
+                    { new Guid("22222222-2222-2222-2222-222222222222"), "Av. Norte, 500", "São Paulo", true, "Posto Policial Norte", "Santana" },
+                    { new Guid("33333333-3333-3333-3333-333333333333"), "Av. Sul, 200", "São Paulo", true, "Base Comunitária Sul", "Santo Amaro" },
+                    { new Guid("44444444-4444-4444-4444-444444444444"), "Rua do Shopping, 1", "São Paulo", true, "Shopping Center Plaza", "Jardins" },
+                    { new Guid("55555555-5555-5555-5555-555555555555"), "Rua Segura, 99", "Rio de Janeiro", true, "Estacionamento 24h Seguro", "Centro" }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Claims_CreatedByUserId",
                 table: "Claims",
@@ -303,6 +340,12 @@ namespace PlacaSegura.Infrastructure.Migrations
                 name: "IX_Reports_EventAt",
                 table: "Reports",
                 column: "EventAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Cpf",
+                table: "Users",
+                column: "Cpf",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",

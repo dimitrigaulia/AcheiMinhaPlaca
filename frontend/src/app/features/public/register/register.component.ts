@@ -68,95 +68,26 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
     <div class="register-container">
       <mat-card class="register-card">
         <mat-card-header>
-          <mat-card-title>Crie sua conta</mat-card-title>
-          <mat-card-subtitle>Preencha seus dados para começar</mat-card-subtitle>
+          <div class="header-content">
+            <mat-icon class="header-icon" color="primary">person_add</mat-icon>
+            <mat-card-title>Criar sua conta</mat-card-title>
+            <mat-card-subtitle>Preencha seus dados para começar</mat-card-subtitle>
+          </div>
         </mat-card-header>
         
         <mat-card-content>
           <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
             
-            <!-- Dados Pessoais -->
-            <h3 class="section-title">Dados Pessoais</h3>
             <div class="form-grid">
               <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Nome Completo</mat-label>
+                <mat-label>Nome Completo (Opcional)</mat-label>
+                <mat-icon matPrefix>badge</mat-icon>
                 <input matInput formControlName="fullName" placeholder="Seu nome completo">
-                <mat-error *ngIf="registerForm.get('fullName')?.hasError('required')">Obrigatório</mat-error>
-                <mat-error *ngIf="registerForm.get('fullName')?.hasError('minlength')">Mínimo 5 caracteres</mat-error>
               </mat-form-field>
 
-              <mat-form-field appearance="outline">
-                <mat-label>CPF</mat-label>
-                <input matInput formControlName="cpf" placeholder="000.000.000-00" maxlength="14">
-                <mat-error *ngIf="registerForm.get('cpf')?.hasError('required')">Obrigatório</mat-error>
-                <mat-error *ngIf="registerForm.get('cpf')?.hasError('invalidCpf')">CPF inválido</mat-error>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline">
-                <mat-label>Data de Nascimento</mat-label>
-                <input matInput [matDatepicker]="picker" formControlName="birthDate">
-                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
-                <mat-error *ngIf="registerForm.get('birthDate')?.hasError('required')">Obrigatório</mat-error>
-              </mat-form-field>
-              
-              <mat-form-field appearance="outline">
-                <mat-label>Celular</mat-label>
-                <input matInput formControlName="phoneNumber" placeholder="(XX) XXXXX-XXXX">
-                <mat-error *ngIf="registerForm.get('phoneNumber')?.hasError('required')">Obrigatório</mat-error>
-              </mat-form-field>
-            </div>
-
-            <!-- Endereço -->
-            <h3 class="section-title">Endereço</h3>
-            <div class="form-grid address-grid">
-              <mat-form-field appearance="outline" class="cep-field">
-                <mat-label>CEP</mat-label>
-                <input matInput formControlName="zipCode" placeholder="00000-000">
-                <mat-error *ngIf="registerForm.get('zipCode')?.hasError('required')">Obrigatório</mat-error>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="street-field">
-                <mat-label>Logradouro</mat-label>
-                <input matInput formControlName="street">
-                <mat-error *ngIf="registerForm.get('street')?.hasError('required')">Obrigatório</mat-error>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline">
-                <mat-label>Número</mat-label>
-                <input matInput formControlName="number">
-                <mat-error *ngIf="registerForm.get('number')?.hasError('required')">Obrigatório</mat-error>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline">
-                <mat-label>Complemento</mat-label>
-                <input matInput formControlName="complement">
-              </mat-form-field>
-
-              <mat-form-field appearance="outline">
-                <mat-label>Bairro</mat-label>
-                <input matInput formControlName="neighborhood">
-                <mat-error *ngIf="registerForm.get('neighborhood')?.hasError('required')">Obrigatório</mat-error>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline">
-                <mat-label>Cidade</mat-label>
-                <input matInput formControlName="city">
-                <mat-error *ngIf="registerForm.get('city')?.hasError('required')">Obrigatório</mat-error>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline">
-                <mat-label>Estado</mat-label>
-                <input matInput formControlName="state" placeholder="UF" maxlength="2">
-                <mat-error *ngIf="registerForm.get('state')?.hasError('required')">Obrigatório</mat-error>
-              </mat-form-field>
-            </div>
-
-            <!-- Acesso -->
-            <h3 class="section-title">Dados de Acesso</h3>
-            <div class="form-grid">
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>E-mail</mat-label>
+                <mat-icon matPrefix>email</mat-icon>
                 <input matInput formControlName="email" type="email">
                 <mat-error *ngIf="registerForm.get('email')?.hasError('required')">Obrigatório</mat-error>
                 <mat-error *ngIf="registerForm.get('email')?.hasError('email')">E-mail inválido</mat-error>
@@ -164,8 +95,9 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
 
               <mat-form-field appearance="outline">
                 <mat-label>Senha</mat-label>
+                <mat-icon matPrefix>lock</mat-icon>
                 <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password">
-                <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+                <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button" tabindex="-1">
                   <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
                 </button>
                 <mat-error *ngIf="registerForm.get('password')?.hasError('required')">Obrigatório</mat-error>
@@ -175,8 +107,9 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
 
               <mat-form-field appearance="outline">
                 <mat-label>Confirmar Senha</mat-label>
+                <mat-icon matPrefix>lock_reset</mat-icon>
                 <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword">
-                 <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" type="button">
+                 <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" type="button" tabindex="-1">
                   <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
                 </button>
                 <mat-error *ngIf="registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched">
@@ -207,7 +140,7 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
           </div>
 
           <button mat-stroked-button class="full-width google-btn" (click)="loginWithGoogle()" [disabled]="loading">
-            <mat-icon>login</mat-icon> <!-- Placeholder for Google Icon -->
+            <mat-icon>login</mat-icon>
             Entrar com Google
           </button>
 
@@ -215,7 +148,7 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
             Já tem uma conta? <a routerLink="/login">Entrar</a>
           </p>
         </mat-card-content>
-        <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+        <mat-progress-bar mode="indeterminate" *ngIf="loading" class="card-loader"></mat-progress-bar>
       </mat-card>
     </div>
   `,
@@ -225,28 +158,31 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
       justify-content: center; 
       align-items: center; 
       padding: 40px 16px; 
-      background-color: #f5f5f5;
+      background-color: #fafafa;
       min-height: 100vh;
     }
     .register-card { 
-      max-width: 800px; 
+      max-width: 600px; 
       width: 100%; 
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      overflow: hidden;
     }
-    mat-card-header {
-      margin-bottom: 20px;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 16px;
+    .header-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 100%;
+      margin-bottom: 24px;
     }
-    .section-title {
-      font-size: 1rem;
-      font-weight: 500;
-      color: #333;
-      margin: 16px 0 8px;
-      border-left: 4px solid #3f51b5;
-      padding-left: 8px;
+    .header-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
     }
+    
     .form-grid {
       display: grid;
       grid-template-columns: 1fr;
@@ -256,24 +192,27 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
       .form-grid {
         grid-template-columns: 1fr 1fr;
       }
-      .address-grid {
-        grid-template-columns: 1fr 1fr 1fr;
-      }
-      .cep-field { grid-column: span 1; }
-      .street-field { grid-column: span 2; }
+      .full-width { grid-column: 1 / -1; }
     }
-    .full-width { grid-column: 1 / -1; width: 100%; }
     
     .terms-container { margin: 16px 0; }
-    .terms-error { font-size: 0.75rem; color: #f44336; margin-left: 12px; }
+    .terms-error { font-size: 0.75rem; color: #f44336; margin-left: 12px; display: block; margin-top: 4px; }
 
-    .actions { display: flex; justify-content: center; margin-top: 24px; }
-    .submit-btn { width: 100%; max-width: 300px; padding: 24px; font-size: 1.1rem; }
+    .actions { margin-top: 24px; }
+    .submit-btn { width: 100%; height: 48px; font-size: 1.1rem; }
 
     .divider-container { position: relative; margin: 32px 0 24px; text-align: center; }
-    .divider-text { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: white; padding: 0 10px; color: #888; font-size: 0.8rem; }
-    .google-btn { width: 100%; margin-bottom: 16px; padding: 20px; }
-    .footer-text { text-align: center; margin-top: 16px; font-size: 0.9rem; }
+    .divider-text { 
+      position: absolute; top: -10px; left: 50%; transform: translateX(-50%); 
+      background: white; padding: 0 10px; color: #888; font-size: 0.8rem; 
+    }
+    .google-btn { width: 100%; margin-bottom: 16px; height: 48px; color: #555; }
+    
+    .footer-text { text-align: center; margin-top: 16px; font-size: 0.9rem; color: #666; }
+    .footer-text a { color: #3f51b5; text-decoration: none; font-weight: 500; }
+    .footer-text a:hover { text-decoration: underline; }
+
+    .card-loader { position: absolute; bottom: 0; left: 0; right: 0; }
   `]
 })
 export class RegisterComponent {
@@ -287,19 +226,7 @@ export class RegisterComponent {
   hideConfirmPassword = true;
 
   registerForm = this.fb.group({
-    fullName: ['', [Validators.required, Validators.minLength(5)]],
-    cpf: ['', [Validators.required, cpfValidator()]],
-    birthDate: ['', Validators.required],
-    phoneNumber: ['', Validators.required], // Mask logic should be in directive, simplified here
-    
-    zipCode: ['', Validators.required],
-    street: ['', Validators.required],
-    number: ['', Validators.required],
-    complement: [''],
-    neighborhood: ['', Validators.required],
-    city: ['', Validators.required],
-    state: ['', Validators.required],
-
+    fullName: [''],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/)]],
     confirmPassword: ['', Validators.required],

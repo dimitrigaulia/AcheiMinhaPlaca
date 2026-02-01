@@ -5,6 +5,7 @@ using PlacaSegura.Application.Common.Interfaces;
 using PlacaSegura.Application.DTOs;
 using PlacaSegura.Domain.Entities;
 using PlacaSegura.Domain.Enums;
+using PlacaSegura.Domain.ValueObjects;
 
 namespace PlacaSegura.Application.Services;
 
@@ -26,8 +27,7 @@ public class AuthService : IAuthService
         // 1. Generate code
         var code = _otpService.GenerateCode();
         
-        // 2. Hash code (simple hash for MVP, ideally use BCrypt but checking hash is easier if plain)
-        // Wait, requirements say "CodeHash". I'll store BCrypt hash.
+        // 2. Hash code
         var codeHash = BCrypt.Net.BCrypt.HashPassword(code);
 
         // 3. Save OtpRequest
@@ -35,6 +35,7 @@ public class AuthService : IAuthService
         {
             Id = Guid.NewGuid(),
             Email = email,
+            Channel = OtpChannel.Email,
             CodeHash = codeHash,
             ExpiresAt = DateTime.UtcNow.AddMinutes(10), // Configurable
             Attempts = 0,
@@ -45,7 +46,62 @@ public class AuthService : IAuthService
         await _context.SaveChangesAsync();
 
         // 4. Send email
-        await _otpService.SendOtpAsync(email, code);
+        await _otpService.SendOtpAsync(email, code, isSms: false);
+    }
+
+    public async Task RequestPhoneVerificationAsync(Guid userId, string phoneNumber)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null) throw new Exception("User not found");
+
+        var code = _otpService.GenerateCode();
+        var codeHash = BCrypt.Net.BCrypt.HashPassword(code);
+
+        var otpRequest = new OtpRequest
+        {
+            Id = Guid.NewGuid(),
+            PhoneNumber = phoneNumber, // Should ideally format to E.164
+            Channel = OtpChannel.Sms,
+            CodeHash = codeHash,
+            ExpiresAt = DateTime.UtcNow.AddMinutes(5),
+            Attempts = 0,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.OtpRequests.Add(otpRequest);
+        
+        // Update user phone number if needed or just use it for verification context
+        user.PhoneNumber = phoneNumber; 
+        // user.IsPhoneVerified = false; // Reset if changing phone
+        
+        await _context.SaveChangesAsync();
+
+        await _otpService.SendOtpAsync(phoneNumber, code, isSms: true);
+    }
+
+    public async Task VerifyPhoneAsync(Guid userId, string code)
+    {
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null) throw new Exception("User not found");
+
+        // Find valid OTP request for this phone number
+        var otpRequest = await _context.OtpRequests
+            .Where(x => x.PhoneNumber == user.PhoneNumber && x.Channel == OtpChannel.Sms && x.ExpiresAt > DateTime.UtcNow)
+            .OrderByDescending(x => x.CreatedAt)
+            .FirstOrDefaultAsync();
+
+        if (otpRequest == null) throw new Exception("OTP invalid or expired.");
+        if (otpRequest.Attempts >= 5) throw new Exception("Too many attempts.");
+
+        if (!BCrypt.Net.BCrypt.Verify(code, otpRequest.CodeHash))
+        {
+            otpRequest.Attempts++;
+            await _context.SaveChangesAsync();
+            throw new Exception("Invalid code.");
+        }
+
+        user.IsPhoneVerified = true;
+        await _context.SaveChangesAsync();
     }
 
     public async Task<AuthResponseDto> VerifyOtpAsync(string email, string code)
@@ -103,6 +159,41 @@ public class AuthService : IAuthService
             user.SubscriptionType.ToString());
     }
 
+    public async Task<AuthResponseDto> LoginAsync(string email, string password)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        if (user == null)
+        {
+            throw new Exception("Invalid email or password.");
+        }
+
+        if (string.IsNullOrEmpty(user.PasswordHash) || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+        {
+            throw new Exception("Invalid email or password.");
+        }
+
+        if (!user.IsActive)
+        {
+            throw new Exception("User account is inactive.");
+        }
+
+        user.LastLoginAtUtc = DateTime.UtcNow;
+        user.FailedLoginCount = 0; // Reset on success
+        await _context.SaveChangesAsync();
+
+        var accessToken = _jwtTokenGenerator.GenerateAccessToken(user);
+        var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
+
+        return new AuthResponseDto(
+            accessToken,
+            refreshToken,
+            user.Id,
+            user.Email,
+            user.Role.ToString(),
+            user.FullName,
+            user.SubscriptionType.ToString());
+    }
+
     public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
     {
         if (!dto.TermsAccepted)
@@ -110,15 +201,13 @@ public class AuthService : IAuthService
              throw new Exception("Terms of use must be accepted.");
         }
 
-        if (!ValidateCpf(dto.Cpf))
-        {
-            throw new Exception("Invalid CPF.");
-        }
+        // CPF validation removed for MVP
+        // if (!ValidateCpf(dto.Cpf)) { ... }
 
-        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email || u.Cpf == dto.Cpf);
+        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
         if (existingUser != null)
         {
-            throw new Exception("User with this email or CPF already exists.");
+            throw new Exception("User with this email already exists.");
         }
 
         var user = new User
@@ -127,24 +216,16 @@ public class AuthService : IAuthService
             Email = dto.Email,
             FullName = dto.FullName,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-            Cpf = dto.Cpf,
-            PhoneNumber = dto.PhoneNumber,
-            BirthDate = dto.BirthDate,
-            Address = new Address
-            {
-                ZipCode = dto.ZipCode,
-                Street = dto.Street,
-                Number = dto.Number,
-                Complement = dto.Complement,
-                Neighborhood = dto.Neighborhood,
-                City = dto.City,
-                State = dto.State
-            },
+            // Cpf = dto.Cpf, // Optional now
+            // PhoneNumber = dto.PhoneNumber, // Optional now
+            // BirthDate = dto.BirthDate, // Optional now
+            // Address = ... // Removed from register
             TermsAccepted = dto.TermsAccepted,
             TermsAcceptedAt = DateTime.UtcNow,
             Role = UserRole.User,
             SubscriptionType = SubscriptionType.Free,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            IsActive = true
         };
 
         _context.Users.Add(user);
@@ -262,24 +343,16 @@ public class AuthService : IAuthService
             Email = dto.Email,
             FullName = dto.FullName,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-            Cpf = dto.Cpf,
-            PhoneNumber = dto.PhoneNumber,
-            BirthDate = dto.BirthDate,
-            Address = new Address
-            {
-                ZipCode = dto.ZipCode,
-                Street = dto.Street,
-                Number = dto.Number,
-                Complement = dto.Complement,
-                Neighborhood = dto.Neighborhood,
-                City = dto.City,
-                State = dto.State
-            },
+            // Cpf = dto.Cpf,
+            // PhoneNumber = dto.PhoneNumber,
+            // BirthDate = dto.BirthDate,
+            // Address = ...
             TermsAccepted = dto.TermsAccepted,
             TermsAcceptedAt = DateTime.UtcNow,
             Role = UserRole.Admin, // Set as Admin
             SubscriptionType = SubscriptionType.Business,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            IsActive = true
         };
 
         _context.Users.Add(user);

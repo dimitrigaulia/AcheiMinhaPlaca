@@ -30,32 +30,26 @@ public class OtpService : IOtpService
         return code;
     }
 
-    public async Task SendOtpAsync(string email, string code)
+    public async Task SendOtpAsync(string target, string code, bool isSms = false)
     {
         var retryPolicy = Policy
             .Handle<Exception>()
-            .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                (exception, timeSpan, retryCount, context) =>
-                {
-                    _logger.LogWarning($"Falha ao enviar OTP (Tentativa {retryCount}). Erro: {exception.Message}. Retentando em {timeSpan.TotalSeconds}s...");
-                });
+            .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
 
         await retryPolicy.ExecuteAsync(async () =>
         {
-             try 
-             {
-                // MVP: Log to console
-                _logger.LogInformation("==========================================");
-                _logger.LogInformation($"[OTP SENDER] Email: {email} | Code: {code}");
-                _logger.LogInformation("==========================================");
-                
-                await Task.CompletedTask;
-             }
-             catch (Exception ex)
-             {
-                 _logger.LogError(ex, "Erro crítico ao enviar OTP.");
-                 throw;
-             }
+            if (isSms)
+            {
+                 // Simulation of SMS sending
+                _logger.LogInformation($"[SMS MOCK] Sending OTP {code} to {target}");
+            }
+            else
+            {
+                // Simulation of Email sending
+                _logger.LogInformation($"[EMAIL MOCK] Sending OTP {code} to {target}");
+            }
+            
+            await Task.CompletedTask;
         });
     }
 }

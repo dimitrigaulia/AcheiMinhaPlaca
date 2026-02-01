@@ -12,8 +12,8 @@ using PlacaSegura.Infrastructure.Persistence;
 namespace PlacaSegura.Infrastructure.Migrations
 {
     [DbContext(typeof(PlacaSeguraDbContext))]
-    [Migration("20260201053509_ExpandUserAndSubscriptions")]
-    partial class ExpandUserAndSubscriptions
+    [Migration("20260201065510_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -351,6 +351,12 @@ namespace PlacaSegura.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("BirthDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Cpf")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -364,7 +370,28 @@ namespace PlacaSegura.Infrastructure.Migrations
                     b.Property<string>("ExternalProvider")
                         .HasColumnType("text");
 
+                    b.Property<int>("FailedLoginCount")
+                        .HasColumnType("integer");
+
                     b.Property<string>("FullName")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsEmailVerified")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastLoginAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("LockoutUntilUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
                         .HasColumnType("text");
 
                     b.Property<int>("Role")
@@ -376,7 +403,16 @@ namespace PlacaSegura.Infrastructure.Migrations
                     b.Property<int>("SubscriptionType")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("TermsAccepted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("TermsAcceptedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("Cpf")
+                        .IsUnique();
 
                     b.HasIndex("Email")
                         .IsUnique();
@@ -494,6 +530,53 @@ namespace PlacaSegura.Infrastructure.Migrations
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("Report");
+                });
+
+            modelBuilder.Entity("PlacaSegura.Domain.Entities.User", b =>
+                {
+                    b.OwnsOne("PlacaSegura.Domain.ValueObjects.Address", "Address", b1 =>
+                        {
+                            b1.Property<Guid>("UserId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("City")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Complement")
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Neighborhood")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Number")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("State")
+                                .IsRequired()
+                                .HasMaxLength(2)
+                                .HasColumnType("character varying(2)");
+
+                            b1.Property<string>("Street")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("ZipCode")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)");
+
+                            b1.HasKey("UserId");
+
+                            b1.ToTable("Users");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserId");
+                        });
+
+                    b.Navigation("Address");
                 });
 
             modelBuilder.Entity("PlacaSegura.Domain.Entities.Match", b =>

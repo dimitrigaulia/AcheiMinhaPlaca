@@ -5,6 +5,7 @@ using PlacaSegura.Application;
 using PlacaSegura.Infrastructure;
 using PlacaSegura.Domain.Entities;
 using PlacaSegura.Domain.Enums;
+using PlacaSegura.Domain.ValueObjects;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,11 +55,11 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+app.UseCors("AllowFrontend");
+
+// app.UseHttpsRedirection(); // Disable HTTPS Redirection for Dev to fix CORS redirect issue
 
 app.UseStaticFiles();
-
-app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();

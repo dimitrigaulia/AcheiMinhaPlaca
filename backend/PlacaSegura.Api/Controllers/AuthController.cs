@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PlacaSegura.Application.Common.Interfaces;
 using PlacaSegura.Application.DTOs;
@@ -15,6 +16,24 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
+    [Authorize]
+    [HttpPost("phone/request")]
+    public async Task<IActionResult> RequestPhoneVerification([FromBody] PhoneVerificationRequestDto dto)
+    {
+        var userId = Guid.Parse(User.FindFirst("sub")?.Value ?? throw new Exception("User ID not found"));
+        await _authService.RequestPhoneVerificationAsync(userId, dto.PhoneNumber);
+        return Ok(new { message = "Verification code sent to phone." });
+    }
+
+    [Authorize]
+    [HttpPost("phone/verify")]
+    public async Task<IActionResult> VerifyPhone([FromBody] PhoneVerificationVerifyDto dto)
+    {
+        var userId = Guid.Parse(User.FindFirst("sub")?.Value ?? throw new Exception("User ID not found"));
+        await _authService.VerifyPhoneAsync(userId, dto.Code);
+        return Ok(new { message = "Phone verified successfully." });
+    }
+
     [HttpPost("otp/request")]
     public async Task<IActionResult> RequestOtp([FromBody] OtpRequestDto dto)
     {
@@ -26,6 +45,13 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> VerifyOtp([FromBody] OtpVerifyDto dto)
     {
         var response = await _authService.VerifyOtpAsync(dto.Email, dto.Code);
+        return Ok(response);
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDto dto)
+    {
+        var response = await _authService.LoginAsync(dto.Email, dto.Password);
         return Ok(response);
     }
 

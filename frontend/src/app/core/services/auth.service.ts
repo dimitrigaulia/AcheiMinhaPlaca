@@ -29,6 +29,22 @@ export class AuthService {
     );
   }
 
+  login(email: string, password: string) {
+    return this.http.post<any>(`${this.apiUrl}/login`, { email, password }).pipe(
+      tap(response => {
+        this.saveAuth(response);
+      })
+    );
+  }
+
+  requestPhoneVerification(phoneNumber: string) {
+    return this.http.post(`${this.apiUrl}/phone/request`, { phoneNumber });
+  }
+
+  verifyPhone(code: string) {
+    return this.http.post(`${this.apiUrl}/phone/verify`, { code });
+  }
+
   register(data: any) {
     return this.http.post<any>(`${this.apiUrl}/register`, data).pipe(
       tap(response => {

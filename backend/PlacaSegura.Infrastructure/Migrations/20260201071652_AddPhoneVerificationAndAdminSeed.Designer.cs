@@ -12,8 +12,8 @@ using PlacaSegura.Infrastructure.Persistence;
 namespace PlacaSegura.Infrastructure.Migrations
 {
     [DbContext(typeof(PlacaSeguraDbContext))]
-    [Migration("20260201031021_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260201071652_AddPhoneVerificationAndAdminSeed")]
+    partial class AddPhoneVerificationAndAdminSeed
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -161,6 +161,9 @@ namespace PlacaSegura.Infrastructure.Migrations
                     b.Property<int>("Attempts")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Channel")
+                        .HasColumnType("integer");
+
                     b.Property<string>("CodeHash")
                         .IsRequired()
                         .HasColumnType("text");
@@ -169,11 +172,13 @@ namespace PlacaSegura.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -296,6 +301,53 @@ namespace PlacaSegura.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SafeLocations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            Address = "Rua Principal, 100",
+                            City = "São Paulo",
+                            IsActive = true,
+                            Name = "Delegacia Central",
+                            Neighborhood = "Centro"
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            Address = "Av. Norte, 500",
+                            City = "São Paulo",
+                            IsActive = true,
+                            Name = "Posto Policial Norte",
+                            Neighborhood = "Santana"
+                        },
+                        new
+                        {
+                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
+                            Address = "Av. Sul, 200",
+                            City = "São Paulo",
+                            IsActive = true,
+                            Name = "Base Comunitária Sul",
+                            Neighborhood = "Santo Amaro"
+                        },
+                        new
+                        {
+                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
+                            Address = "Rua do Shopping, 1",
+                            City = "São Paulo",
+                            IsActive = true,
+                            Name = "Shopping Center Plaza",
+                            Neighborhood = "Jardins"
+                        },
+                        new
+                        {
+                            Id = new Guid("55555555-5555-5555-5555-555555555555"),
+                            Address = "Rua Segura, 99",
+                            City = "Rio de Janeiro",
+                            IsActive = true,
+                            Name = "Estacionamento 24h Seguro",
+                            Neighborhood = "Centro"
+                        });
                 });
 
             modelBuilder.Entity("PlacaSegura.Domain.Entities.User", b =>
@@ -304,6 +356,12 @@ namespace PlacaSegura.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("BirthDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Cpf")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -311,15 +369,82 @@ namespace PlacaSegura.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("ExternalId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExternalProvider")
+                        .HasColumnType("text");
+
+                    b.Property<int>("FailedLoginCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsEmailVerified")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsPhoneVerified")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastLoginAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("LockoutUntilUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
                     b.Property<int>("Role")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime?>("SubscriptionExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("SubscriptionType")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("TermsAccepted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("TermsAcceptedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("Cpf")
+                        .IsUnique();
 
                     b.HasIndex("Email")
                         .IsUnique();
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "dimitrifgaulia@gmail.com",
+                            FailedLoginCount = 0,
+                            FullName = "Dimitri Gaulia",
+                            IsActive = true,
+                            IsEmailVerified = true,
+                            IsPhoneVerified = true,
+                            PasswordHash = "$2a$11$Rb9TDqUHNnEY49VXkxzPGORF54fB49ZwrDTVYJ5Q0mAPUWHq4RiD.",
+                            PhoneNumber = "13992111026",
+                            Role = 1,
+                            SubscriptionType = 2,
+                            TermsAccepted = true,
+                            TermsAcceptedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("PlacaSegura.Domain.Entities.Claim", b =>
@@ -432,6 +557,53 @@ namespace PlacaSegura.Infrastructure.Migrations
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("Report");
+                });
+
+            modelBuilder.Entity("PlacaSegura.Domain.Entities.User", b =>
+                {
+                    b.OwnsOne("PlacaSegura.Domain.ValueObjects.Address", "Address", b1 =>
+                        {
+                            b1.Property<Guid>("UserId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("City")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Complement")
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Neighborhood")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Number")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("State")
+                                .IsRequired()
+                                .HasMaxLength(2)
+                                .HasColumnType("character varying(2)");
+
+                            b1.Property<string>("Street")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.Property<string>("ZipCode")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)");
+
+                            b1.HasKey("UserId");
+
+                            b1.ToTable("Users");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserId");
+                        });
+
+                    b.Navigation("Address");
                 });
 
             modelBuilder.Entity("PlacaSegura.Domain.Entities.Match", b =>

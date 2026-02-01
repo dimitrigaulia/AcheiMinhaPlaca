@@ -13,6 +13,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-login',
@@ -29,81 +30,119 @@ import { AuthService } from '../../../core/services/auth.service';
     MatProgressBarModule,
     MatSnackBarModule,
     MatDividerModule,
-    MatIconModule
+    MatIconModule,
+    MatProgressSpinnerModule
   ],
   template: `
     <div class="login-container">
       <mat-card class="login-card">
         <mat-card-header>
-          <mat-card-title>Entrar</mat-card-title>
+          <div class="header-content">
+            <mat-icon class="lock-icon" color="primary">lock</mat-icon>
+            <mat-card-title>Acessar Conta</mat-card-title>
+            <mat-card-subtitle>Bem-vindo de volta ao PlacaSegura</mat-card-subtitle>
+          </div>
         </mat-card-header>
+        
         <mat-card-content>
-          <mat-stepper linear #stepper>
-            <!-- Step 1: Email -->
-            <mat-step [stepControl]="emailForm">
-              <ng-template matStepLabel>E-mail</ng-template>
-              <form [formGroup]="emailForm" (ngSubmit)="requestOtp(stepper)">
-                <p>Enviaremos um código de acesso para o seu e-mail.</p>
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Seu e-mail</mat-label>
-                  <input matInput formControlName="email" type="email" placeholder="exemplo@email.com">
-                  <mat-error *ngIf="emailForm.get('email')?.hasError('required')">E-mail é obrigatório</mat-error>
-                  <mat-error *ngIf="emailForm.get('email')?.hasError('email')">E-mail inválido</mat-error>
-                </mat-form-field>
-                <div class="actions">
-                  <button mat-flat-button color="primary" type="submit" [disabled]="emailForm.invalid || loading">
-                    Receber Código
-                  </button>
-                </div>
-              </form>
+          <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>E-mail</mat-label>
+              <mat-icon matPrefix>email</mat-icon>
+              <input matInput formControlName="email" type="email" placeholder="exemplo@email.com">
+              <mat-error *ngIf="loginForm.get('email')?.hasError('required')">E-mail é obrigatório</mat-error>
+              <mat-error *ngIf="loginForm.get('email')?.hasError('email')">E-mail inválido</mat-error>
+            </mat-form-field>
 
-              <div class="divider-container">
-                <mat-divider></mat-divider>
-                <span class="divider-text">OU</span>
-              </div>
-
-              <button mat-stroked-button class="full-width google-btn" (click)="loginWithGoogle()" [disabled]="loading">
-                Entrar com Google
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Senha</mat-label>
+              <mat-icon matPrefix>lock</mat-icon>
+              <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password">
+              <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button" tabindex="-1">
+                <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
               </button>
+              <mat-error *ngIf="loginForm.get('password')?.hasError('required')">Senha é obrigatória</mat-error>
+            </mat-form-field>
 
-              <p class="footer-text">
-                Não tem uma conta? <a routerLink="/register">Cadastrar-se</a>
-              </p>
-            </mat-step>
+            <div class="forgot-password">
+              <a routerLink="/forgot-password" class="link-small">Esqueci minha senha</a>
+            </div>
 
-            <!-- Step 2: Code -->
-            <mat-step [stepControl]="codeForm">
-              <ng-template matStepLabel>Código</ng-template>
-              <form [formGroup]="codeForm" (ngSubmit)="verifyOtp()">
-                <p>Digite o código de 6 dígitos enviado para <strong>{{ emailForm.get('email')?.value }}</strong>.</p>
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Código</mat-label>
-                  <input matInput formControlName="code" placeholder="000000" maxlength="6">
-                  <mat-error *ngIf="codeForm.get('code')?.hasError('required')">Código é obrigatório</mat-error>
-                </mat-form-field>
-                <div class="actions">
-                  <button mat-button matStepperPrevious type="button">Voltar</button>
-                  <button mat-flat-button color="primary" type="submit" [disabled]="codeForm.invalid || loading">
-                    Entrar
-                  </button>
-                </div>
-              </form>
-            </mat-step>
-          </mat-stepper>
+            <div class="actions">
+              <button mat-flat-button color="primary" type="submit" [disabled]="loginForm.invalid || loading" class="full-width submit-btn">
+                <span *ngIf="!loading">Entrar</span>
+                <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+              </button>
+            </div>
+          </form>
+
+          <div class="divider-container">
+            <mat-divider></mat-divider>
+            <span class="divider-text">OU</span>
+          </div>
+
+          <button mat-stroked-button class="full-width google-btn" (click)="loginWithGoogle()" [disabled]="loading">
+            <mat-icon>login</mat-icon> Entrar com Google
+          </button>
+
+          <p class="footer-text">
+            Não tem uma conta? <a routerLink="/register">Cadastrar-se</a>
+          </p>
         </mat-card-content>
-        <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+        <mat-progress-bar mode="indeterminate" *ngIf="loading" class="card-loader"></mat-progress-bar>
       </mat-card>
     </div>
   `,
   styles: [`
-    .login-container { display: flex; justify-content: center; align-items: center; padding: 40px 16px; }
-    .login-card { max-width: 400px; width: 100%; }
+    .login-container { 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      min-height: 100vh; 
+      padding: 20px; 
+      background-color: #fafafa;
+    }
+    .login-card { 
+      max-width: 400px; 
+      width: 100%; 
+      border-radius: 16px; 
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
+      overflow: hidden;
+    }
+    .header-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 24px;
+      text-align: center;
+      width: 100%;
+    }
+    .lock-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+    }
     .full-width { width: 100%; }
-    .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+    .forgot-password { text-align: right; margin-bottom: 16px; margin-top: -8px; }
+    .link-small { font-size: 0.85rem; text-decoration: none; color: #3f51b5; }
+    .link-small:hover { text-decoration: underline; }
+    
+    .actions { margin-bottom: 16px; }
+    .submit-btn { height: 48px; font-size: 1rem; }
+    
     .divider-container { position: relative; margin: 24px 0; text-align: center; }
-    .divider-text { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: white; padding: 0 10px; color: #888; font-size: 0.8rem; }
-    .google-btn { margin-bottom: 16px; }
-    .footer-text { text-align: center; margin-top: 16px; font-size: 0.9rem; }
+    .divider-text { 
+      position: absolute; top: -10px; left: 50%; transform: translateX(-50%); 
+      background: white; padding: 0 10px; color: #888; font-size: 0.8rem; 
+    }
+    
+    .google-btn { height: 48px; margin-bottom: 16px; color: #555; }
+    .footer-text { text-align: center; margin-top: 16px; font-size: 0.9rem; color: #666; }
+    .footer-text a { color: #3f51b5; text-decoration: none; font-weight: 500; }
+    .footer-text a:hover { text-decoration: underline; }
+    
+    .card-loader { position: absolute; bottom: 0; left: 0; right: 0; }
   `]
 })
 export class LoginComponent {
@@ -113,43 +152,20 @@ export class LoginComponent {
   private snackBar = inject(MatSnackBar);
 
   loading = false;
+  hidePassword = true;
 
-  emailForm = this.fb.group({
-    email: ['', [Validators.required, Validators.email]]
+  loginForm = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required]]
   });
 
-  codeForm = this.fb.group({
-    code: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]]
-  });
-
-  requestOtp(stepper: any) {
-    if (this.emailForm.invalid) return;
-    
-    this.loading = true;
-    const email = this.emailForm.get('email')?.value!;
-    
-    this.authService.requestOtp(email).subscribe({
-      next: () => {
-        this.loading = false;
-        this.snackBar.open('Código enviado para seu e-mail!', 'OK', { duration: 3000 });
-        stepper.next();
-      },
-      error: (err) => {
-        this.loading = false;
-        this.snackBar.open('Erro ao solicitar código. Tente novamente.', 'Fechar', { duration: 3000 });
-        console.error(err);
-      }
-    });
-  }
-
-  verifyOtp() {
-    if (this.codeForm.invalid) return;
+  onLogin() {
+    if (this.loginForm.invalid) return;
 
     this.loading = true;
-    const email = this.emailForm.get('email')?.value!;
-    const code = this.codeForm.get('code')?.value!;
+    const { email, password } = this.loginForm.value;
 
-    this.authService.verifyOtp(email, code).subscribe({
+    this.authService.login(email!, password!).subscribe({
       next: () => {
         this.loading = false;
         this.snackBar.open('Login realizado com sucesso!', 'OK', { duration: 3000 });
@@ -157,8 +173,8 @@ export class LoginComponent {
       },
       error: (err) => {
         this.loading = false;
-        this.snackBar.open('Código inválido ou expirado.', 'Fechar', { duration: 3000 });
-        console.error(err);
+        const msg = err.error?.message || 'Erro ao realizar login.';
+        this.snackBar.open(msg, 'Fechar', { duration: 3000 });
       }
     });
   }

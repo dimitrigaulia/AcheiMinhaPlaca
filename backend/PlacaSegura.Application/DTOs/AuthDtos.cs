@@ -6,6 +6,8 @@ public record OtpRequestDto(string Email);
 
 public record OtpVerifyDto(string Email, string Code);
 
+public record LoginDto(string Email, string Password);
+
 public record RefreshTokenDto(string RefreshToken);
 
 public record AuthResponseDto(
@@ -34,5 +36,9 @@ public record RegisterDto(
     string State,
     bool TermsAccepted
 );
+
+public record PhoneVerificationRequestDto(string PhoneNumber);
+
+public record PhoneVerificationVerifyDto(string Code);
 
 public record SocialLoginDto(string Provider, string Token);

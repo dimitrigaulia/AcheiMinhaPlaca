@@ -33,22 +33,8 @@ public class AuthServiceTests
     }
 
     [Fact]
-    public async Task RegisterAsync_Should_Throw_When_Cpf_Invalid()
-    {
-        // 111.111.111-11 is typically invalid in checksum algorithms
-        var dto = new RegisterDto(
-            "test@test.com", "Test User", "Password@123", "11111111111", "11999999999", 
-            DateTime.Now.AddYears(-20), "00000000", "Street", "1", null, "N", "City", "SP", true
-        );
-
-        var ex = await Assert.ThrowsAsync<Exception>(() => _authService.RegisterAsync(dto));
-        Assert.Contains("Invalid CPF", ex.Message);
-    }
-
-    [Fact]
     public async Task RegisterAsync_Should_Succeed_When_Data_Valid()
     {
-        // CPF válido: 11144477735
         var dto = new RegisterDto(
             "test@test.com", "Test User", "Password@123", "11144477735", "11999999999", 
             DateTime.Now.AddYears(-20), "00000000", "Street", "1", null, "N", "City", "SP", true

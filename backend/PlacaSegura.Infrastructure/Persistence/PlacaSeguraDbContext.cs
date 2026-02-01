@@ -29,11 +29,17 @@ public class PlacaSeguraDbContext : DbContext, IPlacaSeguraDbContext
         {
             e.HasKey(x => x.Id);
             e.HasIndex(x => x.Email).IsUnique();
-            e.HasIndex(x => x.Cpf).IsUnique();
+            e.HasIndex(x => x.Cpf).IsUnique(); // Optional, but if provided should be unique? Or allow nulls to be duplicates? Postgre treats nulls as distinct.
+            
             e.Property(x => x.Role).HasConversion<int>();
             e.Property(x => x.SubscriptionType).HasConversion<int>();
             
-            e.OwnsOne(x => x.Address);
+            e.OwnsOne(x => x.Address, a =>
+            {
+                a.Property(p => p.ZipCode).HasMaxLength(20);
+                a.Property(p => p.State).HasMaxLength(2);
+                // Can configure more max lengths
+            });
         });
 
         // Report
@@ -148,5 +154,23 @@ public class PlacaSeguraDbContext : DbContext, IPlacaSeguraDbContext
             new SafeLocation { Id = Guid.Parse("44444444-4444-4444-4444-444444444444"), Name = "Shopping Center Plaza", Address = "Rua do Shopping, 1", City = "São Paulo", Neighborhood = "Jardins", IsActive = true },
             new SafeLocation { Id = Guid.Parse("55555555-5555-5555-5555-555555555555"), Name = "Estacionamento 24h Seguro", Address = "Rua Segura, 99", City = "Rio de Janeiro", Neighborhood = "Centro", IsActive = true }
         );
+
+        // Seed Admin User
+        modelBuilder.Entity<User>().HasData(new User
+        {
+            Id = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+            Email = "dimitrifgaulia@gmail.com",
+            FullName = "Dimitri Gaulia",
+            PhoneNumber = "13992111026",
+            Role = Domain.Enums.UserRole.Admin,
+            SubscriptionType = Domain.Enums.SubscriptionType.Business,
+            PasswordHash = "$2a$11$Rb9TDqUHNnEY49VXkxzPGORF54fB49ZwrDTVYJ5Q0mAPUWHq4RiD.", // Hash for "Dimi@1997"
+            IsActive = true,
+            IsEmailVerified = true,
+            IsPhoneVerified = true,
+            TermsAccepted = true,
+            TermsAcceptedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+        });
     }
 }

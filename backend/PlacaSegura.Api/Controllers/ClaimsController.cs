@@ -12,24 +12,27 @@ namespace PlacaSegura.Api.Controllers;
 public class ClaimsController : ControllerBase
 {
     private readonly IClaimService _claimService;
+    private readonly IPlacaSeguraDbContext _context;
 
-    public ClaimsController(IClaimService claimService)
+    public ClaimsController(IClaimService claimService, IPlacaSeguraDbContext context)
     {
         _claimService = claimService;
+        _context = context;
     }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateClaimDto dto)
     {
-        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        try
+        var userId = Guid.Parse(User.FindFirst("sub")?.Value ?? throw new Exception("User ID not found"));
+        
+        // Guard: Phone verification required
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null || !user.IsPhoneVerified)
         {
-            var match = await _claimService.CreateClaimAsync(dto, userId);
-            return Ok(match); // Return match if successful
+            return BadRequest(new { message = "Phone verification is required to create a claim." });
         }
-        catch (Exception ex)
-        {
-            return BadRequest(new { error = ex.Message });
-        }
+
+        var claim = await _claimService.CreateClaimAsync(dto, userId);
+        return Ok(claim);
     }
 }
